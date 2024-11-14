@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Table</title>
+    <style>
+        /* Set table to full width and collapse borders */
+        table {
+            width: 100%;
+            border-collapse: unset;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        
+
+    </style>
+</head>
+<body>
+
+<table>
+    <thead>
+        <tr>
+            <th>ACTIVITY</th>
+            <th>ACTIONS</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <!-- Display the activity name -->
+                {{ activity.activity }}
+            </td>
+            
+                <td>
+                <a href="/detail/{{ activity.id }}">
+                    <button>EDIT</button>
+                </a>
+                </td>
+                <td>
+                <a href="/start/{{ activity.id }}">
+                    <button>START</button>
+                </a>
+                </td>
+                <td>
+                <a href="/archieve/{{ activity.id }}">
+                    <button>ARCHIEVE</button>
+                </a>
+                </td>
+                <td>
+                <a href="/delete/{{ activity.id }}">
+                    <button>DELETE</button>
+                </a>
+                </td>
+            
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

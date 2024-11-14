@@ -1,0 +1,63 @@
+{
+  "name": "ToDoList",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ace serve --watch",
+    "build": "node ace build --production",
+    "start": "node server.js",
+    "test": "node ace test"
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^5.9.6",
+    "@babel/core": "^7.25.8",
+    "@babel/preset-env": "^7.25.8",
+    "@inertiajs/server": "^0.1.0",
+    "@japa/preset-adonis": "^1.2.0",
+    "@japa/runner": "^2.5.1",
+    "@symfony/webpack-encore": "^4.1.1",
+    "@types/node": "^22.9.0",
+    "@types/proxy-addr": "^2.0.3",
+    "@types/source-map-support": "^0.5.10",
+    "@vue/server-renderer": "^3.5.12",
+    "adonis-preset-ts": "^2.1.0",
+    "autoprefixer": "^10.4.20",
+    "file-loader": "^6.2.0",
+    "pino-pretty": "^11.2.2",
+    "postcss-loader": "^7.3.4",
+    "sass": "^1.80.4",
+    "sass-loader": "^13.3.3",
+    "tailwindcss": "^3.4.14",
+    "typescript": "~4.6",
+    "vue-loader": "^17.4.2",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^4.10.0",
+    "youch": "^3.3.4",
+    "youch-terminal": "^2.2.3"
+  },
+  "dependencies": {
+    "@adonisjs/core": "^5.9.0",
+    "@adonisjs/lucid": "^18.4.2",
+    "@adonisjs/repl": "^3.1.11",
+    "@adonisjs/session": "^6.4.0",
+    "@adonisjs/shield": "^7.1.1",
+    "@adonisjs/view": "^6.2.0",
+    "@eidellev/inertia-adonisjs": "^8.1.0",
+    "@inertiajs/vue3": "^1.2.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "lucide-vue-next": "^0.456.0",
+    "luxon": "^3.5.0",
+    "mysql2": "^3.11.3",
+    "proxy-addr": "^2.0.7",
+    "radix-vue": "^1.9.9",
+    "reflect-metadata": "^0.2.2",
+    "source-map-support": "^0.5.21",
+    "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7",
+    "vue": "^3.5.12"
+  },
+  "imports": {
+    "#enums/*": "./app/enums/*.js"
+  }
+}

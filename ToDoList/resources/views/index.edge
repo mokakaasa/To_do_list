@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALL ACTIVITIES</title>
+<style>
+    .archieved{
+        color:gray;
+    }
+
+    .paused{
+        color: green;
+    }
+    a{
+        color:black;
+    }
+</style>
+</head>
+<body>
+
+    <ul>
+        
+        @each (activity in activities)
+        <li >
+        <!-- Display the activity name -->
+        <a href="/show/{{ activity.id }}"  class = "{{activity.is_archieved === 1 ?'archieved' :(activity.status_id ===4 ?'paused':'') }}">{{ activity.activity }}</a>
+        </li>
+        @endeach
+ 
+        </ul>
+
+</body>
+</html>
