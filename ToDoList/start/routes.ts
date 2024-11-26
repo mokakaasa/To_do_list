@@ -36,9 +36,11 @@ Route.get('/completed', 'ToDoListsController.completed')
 
 Route.get('/pending', 'ToDoListsController.pending')
 
-Route.get('/pause', 'ToDoListsController.paused')
+Route.get('/paused', 'ToDoListsController.paused')
 
-Route.get('/archieve', 'ToDoListsController.archieved')
+Route.get('/archieved', 'ToDoListsController.archieved')
+
+Route.get('/deleted', 'ToDoListsController.deleted')
 
 Route.get('/show/:id', 'ToDoListsController.show')
 
@@ -50,7 +52,11 @@ Route.post('/update/:id', 'ToDoListsController.update');
 
 Route.get('/archieve/:id', 'ToDoListsController.archieve');
 
+Route.get('/unarchieve/:id', 'ToDoListsController.unarchieve');
+
 Route.get('/view/:id', 'ToDoListsController.view');
+
+Route.post('/start/:id', 'ToDoListsController.start');
 
 Route.post('/revive/:id', 'ToDoListsController.revive')
 
@@ -61,5 +67,11 @@ Route.post('/restart/:id', 'ToDoListsController.restart')
 Route.get('/pause/:id', 'ToDoListsController.pause')
 
 Route.post('/delete/:id', 'ToDoListsController.destroy')
+
+Route.post('/deleteall', 'ToDoListsController.deleteall')
+
+Route.post('/erase/:id', 'ToDoListsController.erase')
+
+Route.post('/recycle/:id', 'ToDoListsController.recycle')
 })
 

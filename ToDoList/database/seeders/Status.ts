@@ -11,8 +11,6 @@ export default class extends BaseSeeder {
     await Status.createMany([
       {id:Statuses.COMPLETED,status_name:'completed'},
       {id:Statuses.PENDING,status_name:'pending'},
-      {id:Statuses.STARTED,status_name:'started'},
-      {id:Statuses.PAUSED,status_name:'paused'},
     ])
   }
 }

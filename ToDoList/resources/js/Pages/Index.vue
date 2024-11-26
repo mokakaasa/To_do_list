@@ -8,7 +8,6 @@ const originalActivities = ref([...activities.value]); // Store the original act
 const search = ref(''); // Default search to an empty string
 const error = ref(null);
 
-
 // Function to handle navigation based on the selected option
 const navigateTo = (event) => {
   const selectedRoute = event.target.value;
@@ -18,6 +17,7 @@ const navigateTo = (event) => {
     event.target.value = '';  
   }
 };
+
 // Function to filter activities based on the search term
 const searchTable = (value, myArray) => {
   return myArray.filter(activity => {
@@ -75,64 +75,100 @@ const onKeyup = (event) => {
 watch(search, (newSearch) => {
   searchActivities();
 });
+
 </script>
 
 <template>
-  <div class="card card-body">
-    <!-- Search Input -->
-    <input
-      id="search-input"
-      class="form-control"
-      type="text"
-      placeholder="Search activities..."
-      v-model="search"
-      @input="searchActivities"
-      @keyup="onKeyup"
-    />
+  <div>
+    <!-- Top Row: Controls -->
+    <div class="card card-body d-flex justify-content-between align-items-center">
+      <!-- Search Input -->
+      <input
+        id="search-input"
+        class="form-control flex-fill me-3"
+        type="text"
+        placeholder="Search activities..."
+        v-model="search"
+        @input="searchActivities"
+        @keyup="onKeyup"
+      />
 
       <!-- Dropdown for filtering activities -->
-     <!-- Dropdown for filtering activities based on status -->
-     <select class="form-control mt-2" @change="navigateTo($event)">
-      <option value="">Filter by status</option>
-      <option value="/completed">Completed Activities</option>
-      <option value="/pending">Pending Activities</option>
-      <option value="/pause">Paused Activities</option>
-      <option value="/archieve">Archived Activities</option>
-      <option value="/today">Today's Activities</option>
-    </select>
+      <select class="form-control mt-2 me-3 flex-shrink-0" @change="navigateTo($event)">
+        <option value="">Filter by status</option>
+        <option value="/completed">Completed Activities</option>
+        <option value="/pending">Pending Activities</option>
+        <option value="/paused">Paused Activities</option>
+        <option value="/archieved">Archieved Activities</option>
+        <option value="/today">Today's Activities</option>
+        <option value="/deleted">Deleted Activities</option>
+      </select>
+    </div>
 
-    <!-- Display Activities -->
-    <ul v-if="activities.length > 0">
-      <li v-for="activity in activities" :key="activity.id">
-        <a :href="`/show/${activity.id}`" 
-         :class="{ 
-           archieved: activity.is_archieved === 1, 
-           paused: activity.status_id === 4 
-         }">
-        {{ activity.activity }}
-        </a>
-      </li>
-    </ul>
-
-    <!-- Error Message -->
-    <p v-if="error">{{ error }}</p>
+    <!-- Activities List -->
+    <div class="activities-list mt-3">
+      <ul v-if="activities.length > 0" class="list-group">
+        <li v-for="activity in activities" :key="activity.id" class="list-group-item">
+          <a :href="`/show/${activity.id}`" 
+             :class="{ 
+               archieved: activity.is_archieved === 1, 
+               paused: activity.is_paused === 1 
+             }">
+            {{ activity.activity }}
+          </a>
+        </li>
+      </ul>
+      
+      <!-- Error Message -->
+      <p v-else class="text-danger">{{ error }}</p>
+    </div>
   </div>
 </template>
 
 <style scoped>
-  .archieved {
-    color: gray;
-  }
+/* Flexbox alignment for the controls */
+.card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
 
-  .paused {
-    color: green;
-  }
 
-  a {
-    color: black;
-  }
-  .card card-body{
-    align-self:right;
-  }
+/* Adjust input control widths */
+.form-control {
+  width: auto;
+  max-width: 300px; /* Optional: Limit width */
+}
+
+.flex-fill {
+  flex: 1; /* Allow search input to take up remaining space */
+}
+
+/* Spacing between controls and activities */
+.activities-list {
+  margin-top: 1rem;
+}
+
+/* Styling for links */
+.archieved {
+  color: gray;
+}
+
+.paused {
+  color: green;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
 </style>
+
+
+
 

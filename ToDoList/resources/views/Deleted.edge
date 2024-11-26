@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COMPLETED ACTIVITIES</title>
-    <style>
-        /* Set table to full width and collapse borders */
-        table {
-            width: 100%;
-            border-collapse: unset;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-        
-
-    </style>
+    
+        <style>
+            /* Set table to full width and collapse borders */
+            table {
+                width: 100%;
+                border-collapse: unset;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+            }
+            
+    
+        </style>
 </head>
 <body>
 
@@ -25,7 +26,7 @@
 <table>
     <thead>
         <tr>
-            <th>ARCHIEVED ACTIVITIES</th>
+            <th>DELETED ACTIVITIES</th>
             <th>ACTIONS</th>
          
         </tr>
@@ -37,18 +38,6 @@
             <td>
                 <!-- Display the activity name -->
                 {{ activity.activity }}
-            </td>
-
-            <td>
-              <a href="/edit/{{ activity.id }}">
-                <button>EDIT</button>
-            </a>
-            </td>
-
-            <td>
-              <a href="/delete/{{ activity.id }}">
-                <button>DELETE</button>
-            </a>
             </td>
 
         </tr>

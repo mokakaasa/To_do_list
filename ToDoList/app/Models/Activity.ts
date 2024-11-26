@@ -14,6 +14,12 @@ export default class Activity extends BaseModel {
   @column()
   declare is_archieved: number
 
+  @column()
+  declare is_paused: number
+
+  @column()
+  declare is_deleted: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('status_name').notNullable()
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
-      table.integer('is_archieved').defaultTo(0)
+      
     })
   }
 
