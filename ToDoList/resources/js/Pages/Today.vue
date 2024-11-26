@@ -30,23 +30,30 @@ const fetchActivities = async () => {
     console.error('Error fetching activities:', error);
   }
 };
+// const todayUpdate = async (activity,event) => {
+//   const tasks = document.querySelector('#textarea').value.replaceAll('• ','').split("\n"); // Extract the plain text tasks from the HTML
+//   const status_id = checkboxesState.value.map((checked) => (checked ? 1 : 2)); // Map checked boxes to status_ids (1 = completed, 2 = pending, etc.)
 
+//   try {
+//     // Send data to the backend using fetch or Axios
+//     const response = await fetch(`/todayUpdate/${activity.id}`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         tasks: tasks,
+//         status_id: status_id, // Send the checkbox states
+//       }),
+//     });
 
-// 
-
-// Convert activity timestamps to VueCal events
-// const updateEvents = () => {
-//   events.value = activities.value.map(activity => {
-//     const activityTime = new Date(activity.created_at);
-//     const timeSlot = activityTime.getHours();
-//     return {
-//       start: new Date(activity.created_at), // Set start time based on activity's created_at
-//       end: new Date(activity.created_at).setHours(timeSlot + 1), // Assume activity lasts 1 hour
-//       title: activity.activity,
-//       description: activity.status_id === 1 ? 'Complete' : 'Pending', // Example of conditional status
-//     };
-//   });
-// };
+//     const result = await response.json();
+//     console.log(result.message); // Success message from the server
+//   } catch (error) {
+//     console.error('Error submitting tasks:', error);
+//   }
+//   window.location.replace(`/show/${activity.id}`).reload(); 
+// }
 const addCustomList = () => {
   const targetDiv = document.querySelector('.vuecal__flex.vuecal__cell-content');
   if (!targetDiv) return;
@@ -93,8 +100,12 @@ const addCustomList = () => {
 
     liElement.innerHTML = `
       <strong>${activityTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong><br>
-      ${activity.activity}
-    `;
+      <div class="vuecal__event-title" style=" color: rgb(110, 4, 4);">${activity.activity}</div>`;
+
+       // Add click event listener for custom behavior
+       liElement.addEventListener('click', () => {
+      alert(`Activity Details:\n\nTime: ${activityTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}\nActivity: ${activity.activity}`);
+    });
 
     // Append the activity to the list
     ulElement.appendChild(liElement);
@@ -300,7 +311,7 @@ window.onload = () => {
             <input
               type="checkbox"
               :checked="selectedActivity?.status_id === 1"
-              @change="updateActivityStatus($event.target.checked ? 1 : 2)"
+              @change="todayUpdate($event.target.checked ? 1 : 2)"
             />
         </div>
         <p :class="{ completed: selectedActivity?.status_id === 1 }">
@@ -360,13 +371,4 @@ h1 {
   text-decoration-color: black;
   color: black;
 }
-.vuecal__time-column ul, .vuecal__time-column li {
-  list-style: none; /* Removes bullets from unordered lists */
-  padding: 0;
-  margin: 0;
-}
-.vuecal__time-cell-line.hours:before {
-  border-color: #42b983;
-}
-
 </style>
