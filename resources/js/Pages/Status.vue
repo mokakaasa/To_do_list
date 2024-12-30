@@ -56,7 +56,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
+    <div class="box">
+ 
 <strong
   :style="{
     color: activity.status_id === 1 ? 'black' : 'rgb(110, 4, 4)',
@@ -76,3 +77,37 @@ onMounted(() => {
 
     </div>
   </template>
+
+<style scoped>
+/* Centering the box and adding visible borders */
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.box {
+  display: flex;
+  flex-direction: column; /* Keep items in a vertical layout */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically */
+  width: 500px;
+  height: 200px; /* Adjust height for proper centering */
+  padding: 20px;
+  border: 2px solid black; /* Visible border with black color */
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the box both horizontally and vertically */
+  background-color: rgb(142, 190, 114);
+}
+
+strong {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+label {
+  margin-top: 10px;
+}
+</style>

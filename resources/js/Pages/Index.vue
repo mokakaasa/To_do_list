@@ -1,12 +1,16 @@
 <script setup>
-import { ref, watch,onMounted,nextTick } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { ref, watch,onMounted,nextTick,computed } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { FingerprintSpinner } from 'epic-spinners';
+import { DateTime } from 'luxon';
+import { PaginationBar } from 'v-page'
 
+
+const meta  =  ref(usePage().props.activities.meta);
 // Define reactive properties for activities, search input, and error handling
-const activities = ref(usePage().props.activities || []); 
+const activities = ref(usePage().props.activities?.data || []); 
 const originalActivities = ref([...activities.value]); // Store the original activities
 const search = ref(''); // Default search to an empty string
 const error = ref(null);
@@ -14,10 +18,20 @@ const selectedDate = ref(''); // Store the selected date
 const showSpinner = ref(true);
 const hasReloaded = ref(false);
 const isLoading = ref(true);
+const pageNumber = ref(1);
+const totalRow = ref(15);
+
+
+// Get the flash message from the page props
+const flash = usePage().props.flash || {};  // Default to an empty object if flash is undefined
+
+// Computed properties for error and success messages
+const errorMessage = computed(() => flash.error || null);
+const successMessage = computed(() => flash.success || null);
 
 // Function to handle navigation based on the selected option
 const navigateTo = (event) => {
-  const selectedRoute = event.target.value;
+  const selectedRoute = event.target.value; 
   
   if (selectedRoute) {
     window.location.href = selectedRoute;  // Redirects to the selected URL
@@ -25,18 +39,34 @@ const navigateTo = (event) => {
   }
 };
 
+const formatISO =(date) => {
+  if (!date) return ''; // Handle null or undefined dates
+  return DateTime.fromISO(date).toFormat("yyyy-MM-dd'T'HH:mm:ss"); // Convert to ISO format
+};
+
 // Navigate to /create page
 const createNewTask = () => {
   window.location.href = '/create'; // Redirects to the /create page
 };
 
-// Function to filter activities based on the search term
-const searchTable = (value, myArray) => {
-  return myArray.filter(activity => {
-    // Ensure that activity.activity exists and is a string before searching
-    const activityName = activity.activity || '';  // Fallback to empty string if undefined
-    return activityName.toLowerCase().includes(value.toLowerCase()); // Mimics SQL's `%like%`
-  });
+const paginatedActivities = async (pageNumber,perPage) => {
+  // router.get(`/?page=${pageNumber}`)
+//   try {
+//     const response = await fetch(`/?page=${pageNumber}`, {
+//       method: 'GET',
+//       headers: { 'Content-Type': 'application/json',  },
+//     });
+//     const result = await response.json();
+//     console.log(result)
+
+//     activities.value = Array.isArray(result) ? result : [];
+//     const page = result.pageNumber;
+//     const itemsPerPage = result.totalRow;
+//     const total = result.totalPages;
+// } 
+// catch (error) {
+//     console.error('Error fetching activities:', error);
+//   }
 };
 
 const filterByDate = (date) => {
@@ -48,41 +78,71 @@ const filterByDate = (date) => {
   });
 };
 
-const searchActivities = () => {
+// Function to filter activities based on the search term
+const searchTable = (value, myArray) => {
+  return myArray.filter(activity => {
+    // Ensure that activity.activity exists and is a string before searching
+    const activityName = activity.activity || '';  // Fallback to empty string if undefined
+    return activityName.toLowerCase().includes(value.toLowerCase()); // Mimics SQL's `%like%`
+  });
+};
+
+const searchActivities = async () => {
   try {
-    // Ensure the search and activities exist before proceeding
-    if (!activities.value || !Array.isArray(activities.value)) {
-      error.value = 'No activities available for search.';
+    if (!search.value.trim()) {
+      // Reset activities if search is empty
+      activities.value = await fetchActivities('', pageNumber.value, totalRow.value,false);
+      error.value=null;
       return;
     }
 
-    // Trim any leading or trailing whitespace from the search value
-    const trimmedSearch = search.value.trim(); 
+    console.log('Searching for:', search.value);
 
-    // If search is empty, reset activities to original list
-    if (trimmedSearch === '') {
-      activities.value = [...originalActivities.value]; // Reset to all activities
-      error.value = null; // Clear any previous errors
-      return;
-    }
+    const allMatchingActivities = await fetchActivities(search.value.trim(), 1, totalRow.value, true);
 
-    // Log the trimmed search term for debugging
-    console.log('Searching for:', trimmedSearch);
-
-    // Filter the activities based on the trimmed search term
-    const filteredActivities = searchTable(trimmedSearch, originalActivities.value);
-
-    // Check if any activities were found
-    if (filteredActivities.length === 0) {
-      activities.value = []; // Clear the displayed activities if no match
+    if (allMatchingActivities.length === 0) {
+      activities.value = [];
       error.value = 'No activities found';
     } else {
-      activities.value = filteredActivities; // Update the displayed activities
-      error.value = null; // Clear any previous errors
+      activities.value = allMatchingActivities;
+      error.value = null;
     }
   } catch (err) {
     console.error('Error during search:', err);
     error.value = 'Error during search: ' + err.message;
+  }
+};
+
+const fetchActivities = async (searchTerm = '', page = 1, itemsPerPage = 15, allPages = false) => {
+  try {
+    let aggregatedResults = [];
+    let currentPage = page;
+    let lastPage = null; // Initialize lastPage for the loop
+
+    do {
+      const queryParams = new URLSearchParams({
+        search: searchTerm,
+        page: currentPage, // Include page only if fetching all pages
+        itemsPerPage: itemsPerPage, // Skip pagination if fetching all
+      }).toString();
+
+      const response = await fetch(`/searchall?${queryParams}`);
+      const result = await response.json();
+
+      if (response.ok) {
+        aggregatedResults = aggregatedResults.concat(result.data || []);
+        currentPage++;
+        lastPage = result.meta ? result.meta.last_page : 1; // Update lastPage from response
+        if (!allPages)  return aggregatedResults;
+      } else {
+        throw new Error(result.error || 'Failed to fetch activities.');
+      }
+    } while (allPages && currentPage <= lastPage); 
+
+    return aggregatedResults;
+  } catch (err) {
+    console.error('Error fetching activities:', err);
+    throw new Error('An error occurred while fetching activities: ' + err.message);
   }
 };
 
@@ -108,6 +168,23 @@ const postSpinner = () => {
   }
 };
 
+
+const paginationChange = (page) => {
+  
+  if(meta.value.current_page == page.pageNumber && meta.value.per_page == page.pageSize) {
+    console.log(meta.value.current_page, page.pageNumber)
+    console.log('Not reloading')
+  } else {
+    // console.log('Reloading')
+    router.get(`/?page=${page.pageNumber}&per_page=${page.pageSize}`)
+  }
+  
+}
+
+const showPagination = computed(() => {
+      return !search.value.trim(); // Show pagination only if search is empty
+    });
+    
 // Watch the search input to trigger the search automatically
 watch(search, (newSearch) => {
   searchActivities();
@@ -118,9 +195,15 @@ watch(selectedDate, (newDate) => {
   activities.value = filterByDate(newDate); // Filter activities when the date changes
 });
 
+// watch(pageNumber, (newPageNumber) => {
+//   paginatedActivities(newPageNumber);
+// });
+
+
 // Simulate fetching activities or other setup
 // Simulate fetching activities or other setup
 onMounted(() => {
+  // paginatedActivities(pageNumber)
   hideSpinnerAfterDelay(showSpinner); // Pass `showSpinner` to hide the spinner after the delay
   // Ensure the page reloads only if needed
   if (!window.performance || window.performance.navigation.type !== window.performance.navigation.TYPE_RELOAD) {
@@ -193,7 +276,8 @@ onMounted(() => {
 
     <!-- Activities List -->
     <div class="table">
-    <DataTable :value="activities" responsiveLayout="scroll">
+    <DataTable 
+    :value="activities" responsiveLayout="scroll">
       <template #header>
         <h1>ALL ACTIVITIES</h1>
       </template>
@@ -234,10 +318,19 @@ onMounted(() => {
           </div>
         </template>
       </Column>
+      
+      <Column field="is_deleted" header="DELETED">
+        <template #body="slotProps">
+          <div>
+            {{ slotProps.data.is_deleted }}
+          </div>
+        </template>
+      </Column>
+
       <Column field="created_at" header="START TIME">
         <template #body="slotProps">
           <div>
-            {{ slotProps.data.created_at}}
+            {{formatISO(slotProps.data.created_at)}}
           </div>
         </template>
       </Column>
@@ -245,15 +338,36 @@ onMounted(() => {
   <template #body="slotProps">
     <div>
       <!-- Display the 'updated_at' only if 'status_id === 1', otherwise show nothing -->
-      {{ slotProps.data.status_id === 1 ? slotProps.data.updated_at : '' }}
+      {{ slotProps.data.status_id === 1 ? formatISO(slotProps.data.updated_at) : '' }}
     </div>
   </template>
 </Column>
+
+    <template #footer>
+    <PaginationBar
+    v-if="showPagination"
+    :modelValue="meta.current_page"
+    :total-row="meta.total"
+    :page-size="meta.per_page"
+    @change="paginationChange"
+      />
+    </template>
   </DataTable>
 
     </div>
   </div>
 </div>
+
+<!-- <VueTailwindPagination :current="currentPage" :total="total" :per-page="perPage" @page-changed="current = $event"/> -->
+
+
+<div v-if="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>
+<div v-if="successMessage" class="alert alert-success">
+  {{ successMessage }}
+</div>
+
   
 </template>
 

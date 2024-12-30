@@ -7,29 +7,7 @@ const error = ref(null);
 
 const isLoading = ref(true);
 
-const fetchActivity = async () => {
-
-  try {
-    const response = await fetch(`/detail/${activity.id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const result = await response.json();
-    activity.value = result;
-    console.log(result); // Success message from the server
-  } catch (error) {
-    // console.error('Error submitting tasks:', error);
-  }
-};
-
 onMounted(() => {
-
-  nextTick(() => {
-    fetchActivity()
-  }) // Call the fetchActivity function when the component mounts
-
     // Ensure the page reloads only if needed
     if (!window.performance || window.performance.navigation.type !== window.performance.navigation.TYPE_RELOAD) {
     // Force reload if the page is not already reloaded
@@ -47,7 +25,7 @@ onMounted(() => {
   <div class="box">
     <h3>{{ activity.activity }}</h3>
 
-    <a :href="`/edit/${activity.id}`">
+    <a :href="`/updatename/${activity.id}`">
       <button class="button">CHANGE ACTIVITY NAME</button>
     </a>
 

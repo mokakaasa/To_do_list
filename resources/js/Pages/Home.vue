@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
+import { router } from '@inertiajs/vue3';
 
 // Reactive references for the tasks and elements
 const text = ref('')  // Text to render in the span
@@ -8,7 +9,8 @@ const bodyRef = ref(null)  // Reference for the body element
 const checkboxesState = ref([])  // Array to track checked state of each checkbox
 
 const isLoading = ref(true);
-
+const errorMessage = ref('');
+const successMessage = ref('');
 // Function to check if the span's height exceeds the body's height
 const checkOverflow = () => {
   // Check if refs exist before measuring
@@ -97,27 +99,44 @@ const attachCheckboxListeners = () => {
 const handleSubmit = async () => {
   const tasks = document.querySelector('#textarea').value.replaceAll('• ','').split("\n"); // Extract the plain text tasks from the HTML
   const status_id = checkboxesState.value.map((checked) => (checked ? 1 : 2)); // Map checked boxes to status_ids (1 = completed, 2 = pending, etc.)
+  errorMessage.value = '';
+  successMessage.value = '';
 
   try {
     // Send data to the backend using fetch or Axios
+    // router.post('/store', {
+    //     tasks: tasks,
+    //     status_id: status_id, // Send the checkbox states
+    //   })
     const response = await fetch('/store', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        tasks: tasks,
-        status_id: status_id, // Send the checkbox states
-      }),
+      body: JSON.stringify({tasks,status_id}),
     });
 
     const result = await response.json();
-    console.log(result.message); // Success message from the server
+
+    
+    if(response.ok){
+    successMessage.value = result.message;
+    window.location.replace('/today').reload(); // Refresh the page
+    
+
+    if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      }
+
+    } else {
+      errorMessage.value = result.message;
+   }
+   
   } catch (error) {
+    errorMessage.value = 'ACTIVITY IS TOO SHORT OR EMPTY!!!!!';
     console.error('Error submitting tasks:', error);
   }
-  window.location.replace('/today').reload(); // Refresh the page
-  window.location.href = '/today';
+
 }
 
 // Mount logic to handle initial rendering
@@ -144,6 +163,16 @@ onMounted(() => {
   <h1 id="title"><i>Jot Down Your Desired Tasks</i></h1>
 
   <div id="body" ref="bodyRef">
+
+    <div v-if="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Display success message -->
+    <div v-if="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+    
     <div id="app">
       <!-- Input area for the user to type tasks -->
       <textarea id="textarea" @input="writeText" rows="8" cols="30" placeholder="Start writing.."></textarea>
@@ -213,6 +242,14 @@ h1 {
   border-radius: 16px;      /* Corresponds to w3-round-large (16px radius for large rounding) */
   padding: 8px 16px;        /* Corresponds to w3-button (padding around the button) */
   cursor: pointer;   
+}
+.alert alert success{
+color:blue;
+font-size:50px;
+}
+.alert alert error{
+color:brown; 
+font-size: 50px; 
 }
 
 </style>

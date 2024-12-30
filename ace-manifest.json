@@ -1,5 +1,17 @@
 {
   "commands": {
+    "archive:paused_activities": {
+      "settings": {
+        "loadApp": false,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/ArchivePausedActivities",
+      "commandName": "archive:paused_activities",
+      "description": "",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",

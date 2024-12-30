@@ -382,15 +382,15 @@ const observer = new MutationObserver((mutations) => {
         }
     });
 
-    if (!window.performance || window.performance.navigation.type !== window.performance.navigation.TYPE_RELOAD) {
-    // Force reload if the page is not already reloaded
-    window.location.reload();
-  } else {
-    // Allow the content to display after the page has reloaded
-    nextTick(() => {
-      isLoading.value = false; // Hide loading screen
-    });
-  }
+  //   if (!window.performance || window.performance.navigation.type !== window.performance.navigation.TYPE_RELOAD) {
+  //   // Force reload if the page is not already reloaded
+  //   window.location.reload();
+  // } else {
+  //   // Allow the content to display after the page has reloaded
+  //   nextTick(() => {
+  //     isLoading.value = false; // Hide loading screen
+  //   });
+  // }
 });
 
 // Start observing the <body> for child changes
